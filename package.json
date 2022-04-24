@@ -2,5 +2,11 @@
   "name": "r6-mod",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "tf:apply": "cd infrastructure && terraform apply",
+    "tf:plan": "cd infrastructure && terraform plan",
+    "tf:init": "cd infrastructure && terraform init"
+  },
+  "packageManager": "yarn@3.2.0"
 }
