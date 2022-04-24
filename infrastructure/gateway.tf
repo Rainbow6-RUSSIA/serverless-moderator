@@ -1,5 +1,5 @@
-resource "yandex_api_gateway" "test-api-gateway" {
-  name        = "some-name"
+resource "yandex_api_gateway" "gateway" {
+  name        = "r6mod-gateway"
   description = "any description"
   labels = {
     label       = "label"
