@@ -1,5 +1,5 @@
-exports.handler = async function (event, context) {
-    name = event.queryStringParameters.name
+exports.bundle = async function (event, context) {
+    const name = event.queryStringParameters.name
     return {
         'statusCode': 200,
         'headers': {
