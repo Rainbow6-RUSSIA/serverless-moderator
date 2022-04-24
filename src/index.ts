@@ -1,4 +1,6 @@
-exports.bundle = async function (event, context) {
+import { isTruthy } from './util';
+
+module.exports.handler = async function (event, context) {
     const name = event.queryStringParameters.name
     return {
         'statusCode': 200,
@@ -6,6 +8,6 @@ exports.bundle = async function (event, context) {
             'Content-Type': 'text/plain'
         },
         'isBase64Encoded': false,
-        'body': `Hello, ${name}!`
+        'body': `Hello, ${name}!, ${isTruthy("")}`
     }
 };

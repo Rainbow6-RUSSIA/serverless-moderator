@@ -6,7 +6,20 @@
   "scripts": {
     "tf:apply": "cd infrastructure && terraform apply",
     "tf:plan": "cd infrastructure && terraform plan",
-    "tf:init": "cd infrastructure && terraform init"
+    "tf:init": "cd infrastructure && terraform init",
+    "git:clean-tree": "git diff --exit-code && git diff --cached --exit-code",
+    "build": "ncc build ./src/index.ts -o dist",
+    "zip": "cd dist && zip -r bundle.zip index.js",
+    "clear": "rm -rf dist",
+    "deploy": "yarn clear && yarn build && yarn zip && yarn git:clean-tree && tf:apply"
   },
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.2.0",
+  "devDependencies": {
+    "@types/node": "^17.0.25",
+    "@vercel/ncc": "^0.33.4",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "serverless-http": "^3.0.1"
+  }
 }
