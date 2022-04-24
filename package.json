@@ -11,7 +11,7 @@
     "build": "ncc build ./src/index.ts -o dist",
     "zip": "cd dist && zip -r bundle.zip index.js",
     "clear": "rm -rf dist",
-    "deploy": "yarn clear && yarn build && yarn zip && yarn git:clean-tree && tf:apply"
+    "deploy": "yarn clear && yarn build && yarn zip && yarn git:clean-tree && yarn tf:apply"
   },
   "packageManager": "yarn@3.2.0",
   "devDependencies": {
