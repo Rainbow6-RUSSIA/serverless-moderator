@@ -4,6 +4,10 @@ terraform {
       source  = "yandex-cloud/yandex"
       version = "0.74.0"
     }
+    git = {
+      source  = "innovationnorway/git"
+      version = "0.1.3"
+    }
   }
 }
 
