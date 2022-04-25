@@ -4,7 +4,7 @@ data "git_repository" "info" {
 
 resource "yandex_function" "entrypoint" {
   depends_on = [
-    data.yandex_iam_service_account.deployer
+    yandex_iam_service_account.deployer
   ]
   name               = "r6mod-entrypoint"
   description        = "serverless bot entrypoint"
@@ -13,8 +13,8 @@ resource "yandex_function" "entrypoint" {
   entrypoint         = "index.handler"
   memory             = "128"
   execution_timeout  = "30"
-  service_account_id = data.yandex_iam_service_account.deployer.id
-  tags               = ["my_tag"]
+  service_account_id = yandex_iam_service_account.deployer.id
+
   content {
     zip_filename = "../dist/bundle.zip"
   }

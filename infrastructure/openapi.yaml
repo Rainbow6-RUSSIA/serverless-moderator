@@ -1,0 +1,41 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Mod.R6RU
+paths:
+  /echo:
+    get:
+      summary: Echo
+      operationId: echo
+      parameters:
+        - name: msg
+          in: query
+          description: Message
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Echo
+          content:
+            'text/plain':
+              schema:
+                type: "string"
+      x-yc-apigateway-integration:
+        type: dummy
+        http_code: 200
+        http_headers:
+          'Content-Type': "text/plain"
+        content:
+          'text/plain': "Hello again, {msg}!\n"
+  /test:
+    get:
+      responses:
+        '200':
+          description: Ok
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: ${function_id}
+        tag: $latest
+        service_account_id: ${service_account_id}
+         
