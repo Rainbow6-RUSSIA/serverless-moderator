@@ -1,13 +1,11 @@
-import { isTruthy } from './util';
+import express from "express";
+import serverless from "serverless-http";
+import testRoute from "./test";
 
-module.exports.handler = async function (event, context) {
-    const name = event.queryStringParameters.name
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Content-Type': 'text/plain'
-        },
-        'isBase64Encoded': false,
-        'body': `Hello, ${name}!, ${isTruthy("")}`
-    }
-};
+const app = express()
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+app.use("/test", testRoute)
+
+const handler = serverless(app)
+module.exports.handler = handler

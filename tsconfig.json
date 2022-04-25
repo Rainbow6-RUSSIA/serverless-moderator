@@ -1,15 +1,17 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "ES2019",
-        "noImplicitAny": false,
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "outDir": "./dist",
-        "rootDir": "./src",
         "baseUrl": "./",
-        "lib": ["ESNext"]
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "lib": ["ESNext"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noImplicitAny": false,
+        "outDir": "./dist",
+        "removeComments": true,
+        "rootDir": "./src",
+        "sourceMap": true,
+        "target": "ES2019"
     },
     "exclude": ["node_modules", "dist"]
 }
