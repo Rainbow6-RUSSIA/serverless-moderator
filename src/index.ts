@@ -1,11 +1,18 @@
-import express from "express";
-import serverless from "serverless-http";
-import testRoute from "./test";
+import serverless, { Application } from "serverless-http";
+import { ServerlessClient } from "./util/serverless-client.js";
 
-const app = express()
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
-app.use("/test", testRoute)
+const client = new ServerlessClient({
+    discordPublicKey: process.env.DISCORD_PUBLIC_KEY,
+});
+const serverlessApp = serverless(client.handler as Application);
 
-const handler = serverless(app)
-module.exports.handler = handler
+client.server.get("/test", (_, res) => {
+    res.send({ hello: "world" });
+});
+
+const loadedClient = client.load();
+
+export async function handler(event, ctx) {
+    await loadedClient;
+    return serverlessApp(event, ctx);
+}
