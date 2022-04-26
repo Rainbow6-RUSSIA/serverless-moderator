@@ -45,6 +45,7 @@ typings/
 # TS Build
 build
 dist
+bundle-*
 
 .yarn/*
 !.yarn/patches

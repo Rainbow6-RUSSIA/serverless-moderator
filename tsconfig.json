@@ -4,14 +4,15 @@
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "lib": ["ESNext"],
-        "module": "commonjs",
+        "module": "ESNext",
         "moduleResolution": "node",
         "noImplicitAny": false,
         "outDir": "./dist",
         "removeComments": true,
         "rootDir": "./src",
         "sourceMap": true,
-        "target": "ES2019"
+        "target": "ES2021",
+        "skipLibCheck": true
     },
     "exclude": ["node_modules", "dist"]
 }
