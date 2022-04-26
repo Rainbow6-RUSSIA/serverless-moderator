@@ -15,6 +15,10 @@ resource "yandex_function" "entrypoint" {
   execution_timeout  = "30"
   service_account_id = yandex_iam_service_account.deployer.id
 
+  environment = {
+    "DISCORD_PUBLIC_KEY" = var.DISCORD_PUBLIC_KEY
+  }
+
   content {
     zip_filename = "../dist/bundle.zip"
   }
