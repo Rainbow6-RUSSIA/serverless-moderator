@@ -3,6 +3,7 @@ info:
   version: 1.0.0
   title: Mod.R6RU
 paths:
+# Gateway ping
   /echo:
     get:
       summary: Echo
@@ -28,8 +29,20 @@ paths:
           'Content-Type': "text/plain"
         content:
           'text/plain': "Hello again, {msg}!\n"
+# Function ping
   /test:
     get:
+      responses:
+        '200':
+          description: Ok
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: ${function_id}
+        tag: $latest
+        service_account_id: ${service_account_id}
+# Discord outgoing webhook
+  /:
+    post:
       responses:
         '200':
           description: Ok
