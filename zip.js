@@ -4,29 +4,58 @@ import { join } from "path";
 
 const {
     copySync,
-    mkdtempSync,
     rmSync,
     readJSONSync,
     writeJSONSync,
     writeFileSync,
+    mkdirSync,
 } = pkg;
 
-// cd dist && zip -r bundle.zip ./**/*.js && zip -j -r bundle.zip ../package.json
-const tmp = mkdtempSync("bundle-");
-const manifest = readJSONSync("package.json");
-manifest.type = "commonjs";
+function main() {
+    // Создаем временную папку
+    const tmp = "bundle";
+    try {
+        mkdirSync(tmp);
+    } catch (error) {
+        rmSync(tmp, { force: true, recursive: true });
+        return main();
+    }
 
-copySync("dist", join(tmp, "esm"), {
-    recursive: true,
-    filter: (src) => !src.endsWith(".js.map"),
-});
-writeJSONSync(join(tmp, "package.json"), manifest, { spaces: 2 });
-writeJSONSync(join(tmp, "esm", "package.json"), { type: "module" });
+    // Читаем зависимости
+    const { dependencies } = readJSONSync("package.json");
 
-writeFileSync(
-    join(tmp, "index.js"),
-    `module.exports.handler = async (event, ctx) => (await import("./esm/index.js")).handler(event, ctx)`
-);
+    // Копируем собранный ESM код в esm пропуская мапы
+    copySync("dist", join(tmp, "esm"), {
+        recursive: true,
+        filter: (src) => !src.endsWith(".js.map"),
+    });
 
-execSync(`cd ${tmp} && zip -r ../dist/bundle.zip *`);
-rmSync(tmp, { force: true, recursive: true });
+    // Пишем commandjs манифест с зависимостями и точкой входа
+    writeJSONSync(join(tmp, "package.json"), {
+        type: "commonjs",
+        dependencies,
+    });
+
+    // Пишем вложенный esm манифест для переключения импортов
+    writeJSONSync(join(tmp, "esm", "package.json"), {
+        type: "module",
+        main: "./index.js",
+    });
+
+    // Пишем обертку
+    writeFileSync(
+        join(tmp, "index.js"),
+        `const handler = async (event,ctx) => (await import("./esm/index.js")).handler(event,ctx)
+        if (process.env.NODE_ENV==="development") handler()
+        process.chdir("esm")
+        module.exports.handler=handler`
+    );
+
+    // Архивируем
+    execSync(`cd ${tmp} && zip -r ../dist/bundle.zip *`);
+
+    // Очистка
+    rmSync(tmp, { force: true, recursive: true });
+}
+
+main();

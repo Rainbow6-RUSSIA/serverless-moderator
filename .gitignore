@@ -46,6 +46,7 @@ typings/
 build
 dist
 bundle-*
+bundle
 
 .yarn/*
 !.yarn/patches
