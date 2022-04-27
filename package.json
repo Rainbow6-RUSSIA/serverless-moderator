@@ -10,7 +10,7 @@
     "tf:init": "cd infrastructure && terraform init",
     "git:clean-tree": "git diff --exit-code && git diff --cached --exit-code",
     "build": "tsc",
-    "dev": "tsc-watch onSuccess=\"node ./dist/index.js\"",
+    "dev": "tsc-watch --onSuccess \"node ./dist/index.js\"",
     "zip": "node zip.js",
     "clear": "rm -rf dist",
     "deploy": "yarn clear && yarn build && yarn zip && yarn git:clean-tree && yarn tf:apply",

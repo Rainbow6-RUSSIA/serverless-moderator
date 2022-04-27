@@ -1,18 +1,13 @@
 import serverless, { Application } from "serverless-http";
-import { ServerlessClient } from "./util/serverless-client.js";
+import fastify from "fastify";
+import { isDev } from "./util/env.js";
+import { bot, test } from "./plugins/index.js";
 
-const client = new ServerlessClient({
-    discordPublicKey: process.env.DISCORD_PUBLIC_KEY,
-});
-const serverlessApp = serverless(client.handler as Application);
+const app = fastify({ logger: isDev });
 
-client.server.get("/test", (_, res) => {
-    res.send({ hello: "world" });
-});
+app.register(test, { prefix: "/test" });
+app.register(bot, { prefix: "/bot" });
+if (isDev) app.listen({ port: 3000 });
 
-const loadedClient = client.load();
-
-export async function handler(event, ctx) {
-    await loadedClient;
-    return serverlessApp(event, ctx);
-}
+const serverlessApp = serverless(app as Application);
+export const handler = serverlessApp;

@@ -1,6 +1,5 @@
 import { config } from "dotenv";
 import {
-    Client,
     Registry,
     CommandStore,
     InteractionHandlerStore,
