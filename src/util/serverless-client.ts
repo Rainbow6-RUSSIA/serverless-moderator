@@ -1,12 +1,12 @@
 import { Store } from "@sapphire/pieces";
 import { Client, ListenOptions } from "@skyra/http-framework";
-import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import { FastifyInstance } from "fastify";
 import { isDev } from "./env.js";
 
 if (isDev) Store.logger = console.log;
 
 export class ServerlessClient extends Client {
-    listen(options: ListenOptions): Promise<void> {
+    async listen(options: ListenOptions) {
         throw new Error("Unsupported in serverless environment");
     }
 
