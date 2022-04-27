@@ -41,7 +41,7 @@ paths:
         tag: $latest
         service_account_id: ${service_account_id}
 # Discord outgoing webhook
-  /:
+  /bot:
     post:
       responses:
         '200':
