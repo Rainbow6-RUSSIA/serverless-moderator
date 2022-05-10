@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@skyra/http-framework": "^0.3.6",
+    "dynamoose": "^2.8.5",
     "fastify": "^3.27.4",
     "serverless-http": "^3.0.1"
   }
