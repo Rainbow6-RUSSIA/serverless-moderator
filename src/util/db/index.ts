@@ -1,9 +1,11 @@
 import { aws } from "dynamoose";
 import { region, accessKeyId, secretAccessKey, endpoint } from "../env.js";
 
-aws.sdk.config.update({
-    accessKeyId,
-    secretAccessKey,
+export const ddb = new aws.ddb.DynamoDB({
+    credentials: {
+        accessKeyId,
+        secretAccessKey,
+    },
     region,
-    dynamodb: { endpoint },
+    endpoint
 });

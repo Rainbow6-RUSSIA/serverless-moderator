@@ -11,10 +11,10 @@ import {
 )
 @RestrictGuildIds(["216649610511384576"])
 export class UserCommand extends Command {
-    public override chatInputRun(
-        interaction: Command.Interaction
-    ): Command.Response {
-        return this.message({
+    async chatInputRun(
+        interaction: Command.ChatInputInteraction
+    ) {
+        return interaction.reply({
             content: "Pong!",
         });
     }

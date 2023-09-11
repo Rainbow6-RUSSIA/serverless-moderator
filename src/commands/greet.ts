@@ -18,12 +18,12 @@ import {
         )
 )
 export class UserCommand extends Command {
-    public override chatInputRun(
-        interaction: Command.Interaction,
+    async chatInputRun(
+        interaction: Command.ChatInputInteraction,
         { target }: Args
-    ): Command.Response {
+    ) {
         const { username, discriminator } = target.user;
-        return this.message({
+        return interaction.reply({
             content: `Hello, ${username}#${discriminator}`,
         });
         // return this.message({

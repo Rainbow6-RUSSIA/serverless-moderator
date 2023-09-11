@@ -11,7 +11,7 @@ export class ServerlessClient extends Client {
     }
 
     async plugin(fastify: FastifyInstance) {
-        this.server = fastify;
-        this.server.post("/", this.handleHttpMessage.bind(this));
+        fastify.post("/", this.handleHttpMessage.bind(this));
+        this.server = fastify.server;
     }
 }
