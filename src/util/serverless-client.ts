@@ -11,6 +11,7 @@ export class ServerlessClient extends Client {
   }
 
   async handle(req: FastifyRequest, res: FastifyReply) {
+    res.hijack();
     return this.handleRawHttpMessage(
       Object.assign(req.raw, {
         async *[Symbol.asyncIterator]() {
