@@ -4,3 +4,4 @@ variable "folder_id" { type = string }
 variable "zone" { type = string }
 
 variable "DISCORD_PUBLIC_KEY" { type = string }
+variable "DISCORD_TOKEN" { type = string }
