@@ -1,18 +1,18 @@
 {
-    "compilerOptions": {
-        "baseUrl": "./",
-        "esModuleInterop": true,
-        "experimentalDecorators": true,
-        "lib": ["ESNext"],
-        "module": "ESNext",
-        "moduleResolution": "node",
-        "noImplicitAny": false,
-        "outDir": "./dist",
-        "removeComments": true,
-        "rootDir": "./src",
-        "sourceMap": true,
-        "target": "ES2021",
-        "skipLibCheck": true
-    },
-    "exclude": ["node_modules", "dist"]
+  "compilerOptions": {
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "lib": ["ES2021"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "outDir": "./dist",
+    "removeComments": true,
+    "rootDir": "./src",
+    "sourceMap": true,
+    "target": "ES2021",
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", "dist"]
 }

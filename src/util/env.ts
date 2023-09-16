@@ -1,7 +1,7 @@
 import assert from "assert";
 import { config } from "dotenv";
-import { webcrypto } from "crypto";
-import "./polyfill.js";
+// import { webcrypto } from "crypto";
+import { webcrypto } from "./polyfill.js";
 
 config();
 
@@ -24,7 +24,7 @@ assert(discordPublicKey, "No discordPublicKey");
 export const discordPublicKeyObject = await webcrypto.subtle.importKey(
   "raw",
   Buffer.from(discordPublicKey, "hex"),
-  { name: "Ed25519" },
+  { name: "EdDSA", namedCurve: "Ed25519" },
   true,
   ["verify"]
 );

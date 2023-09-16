@@ -1,10 +1,3 @@
-// DOMException global polyfill
-
-globalThis.DOMException ||
-  (() => {
-    try {
-      atob(0 as any);
-    } catch (err) {
-      return err.constructor;
-    }
-  })();
+import "node-domexception";
+import { Crypto } from "@peculiar/webcrypto";
+export const webcrypto = new Crypto();
