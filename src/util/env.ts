@@ -1,19 +1,13 @@
 import assert from "assert";
 import { config } from "dotenv";
 import { webcrypto } from "crypto";
+import "./polyfill.js";
 
 config();
 
 export const isDev = process.env.NODE_ENV === "development";
 
 export const discordPublicKey = process.env.DISCORD_PUBLIC_KEY;
-export const discordPublicKeyObject = await webcrypto.subtle.importKey(
-  "raw",
-  Buffer.from(discordPublicKey, "hex"),
-  { name: "Ed25519" },
-  true,
-  ["verify"]
-);
 export const discordToken = process.env.DISCORD_TOKEN;
 
 export const accessKeyId = process.env.DB_ACCESS_KEY_ID;
@@ -26,3 +20,11 @@ assert(discordPublicKey, "No discordPublicKey");
 // assert(secretAccessKey, "No secretAccessKey")
 // assert(region, "No region")
 // assert(endpoint, "No endpoint")
+
+export const discordPublicKeyObject = await webcrypto.subtle.importKey(
+  "raw",
+  Buffer.from(discordPublicKey, "hex"),
+  { name: "Ed25519" },
+  true,
+  ["verify"]
+);
