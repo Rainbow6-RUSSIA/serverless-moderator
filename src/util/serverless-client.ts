@@ -1,7 +1,9 @@
 import { Store } from "@sapphire/pieces";
 import { Client, ListenOptions } from "@skyra/http-framework";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { discordPublicKeyObject, isDev } from "./env.js";
+import { discordPublicKey, isDev } from "./env.js";
+import { APIInteraction } from "discord.js";
+import { verifyKeyMiddleware } from "discord-interactions";
 
 if (isDev) Store.logger = console.log;
 
@@ -12,19 +14,11 @@ export class ServerlessClient extends Client {
 
   async handle(req: FastifyRequest, res: FastifyReply) {
     res.hijack();
-    return this.handleRawHttpMessage(
-      Object.assign(req.raw, {
-        async *[Symbol.asyncIterator]() {
-          yield JSON.stringify(req.body);
-        },
-      }),
-      res.raw,
-      req.url,
-      discordPublicKeyObject
-    );
+    return this.handleHttpMessage(req.body as APIInteraction, res.raw);
   }
 
   async plugin(fastify: FastifyInstance) {
+    fastify.use(verifyKeyMiddleware(discordPublicKey));
     fastify.post("/", this.handle.bind(this));
     this.server = fastify.server;
   }

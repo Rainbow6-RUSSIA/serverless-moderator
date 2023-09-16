@@ -5,6 +5,8 @@ import { bot, test } from "./plugins/index.js";
 
 const app = fastify({ logger: isDev });
 
+await app.register(import("@fastify/express"));
+
 app.register(test, { prefix: "/test" });
 app.register(bot, { prefix: "/bot" });
 if (isDev) app.listen({ port: 3000 });
