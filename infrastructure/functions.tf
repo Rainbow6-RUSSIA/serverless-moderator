@@ -18,6 +18,7 @@ resource "yandex_function" "entrypoint" {
   environment = {
     "DISCORD_PUBLIC_KEY" = var.DISCORD_PUBLIC_KEY
     "DISCORD_TOKEN"      = var.DISCORD_TOKEN
+    "NODE_ENV"           = "production"
   }
 
   content {
