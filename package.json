@@ -5,7 +5,7 @@
   "type": "module",
   "main": "./dist/register.js",
   "scripts": {
-    "tf:apply": "cd infrastructure && terraform apply",
+    "tf:apply": "cd infrastructure && terraform apply -auto-approve",
     "tf:plan": "cd infrastructure && terraform plan",
     "tf:init": "cd infrastructure && terraform init",
     "git:clean-tree": "git diff --exit-code && git diff --cached --exit-code",
