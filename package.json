@@ -5,8 +5,8 @@
   "type": "module",
   "main": "./dist/register.js",
   "scripts": {
-    "tf:apply": "cd infrastructure && terraform apply",
-    "tf:plan": "cd infrastructure && terraform plan",
+    "tf:apply": "cd infrastructure && terraform apply -var-file=\"../.env\"",
+    "tf:plan": "cd infrastructure && terraform plan -var-file=\"../.env\"",
     "tf:init": "cd infrastructure && terraform init",
     "git:clean-tree": "git diff --exit-code && git diff --cached --exit-code",
     "build": "tsc",
@@ -14,7 +14,7 @@
     "zip": "node zip.js",
     "clear": "rm -rf dist",
     "deploy": "yarn clear && yarn build && yarn zip && yarn git:clean-tree && yarn tf:apply -auto-approve",
-    "deploy:force": "yarn clear && yarn build && yarn zip && yarn tf:apply  -auto-approve -replace=\"yandex_function.entrypoint\"",
+    "deploy:force": "yarn clear && yarn build && yarn zip && yarn tf:apply -auto-approve -replace=\"yandex_function.entrypoint\"",
     "register": "yarn build && node ./dist/register.js"
   },
   "packageManager": "yarn@3.2.0",
