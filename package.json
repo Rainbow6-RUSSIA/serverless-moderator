@@ -43,6 +43,7 @@
     "yarn": "3"
   },
   "resolutions": {
-    "discord-api-types": "0.37.56"
+    "discord-api-types": "0.37.56",
+    "qs": "6.9.7"
   }
 }
