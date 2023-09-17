@@ -5,9 +5,17 @@ import { bot, test } from "./plugins/index.js";
 
 const app = fastify({ logger: isDev });
 
-app.register(test, { prefix: "/test" });
-app.register(bot, { prefix: "/bot" });
-if (isDev) app.listen({ port: 3000 });
+await app.register(test, { prefix: "/test" });
+await app.register(bot, { prefix: "/bot" });
+
+if (isDev) {
+  await app.register(import("@fastify/http-proxy"), {
+    upstream: process.env.GW_UPSTREAM,
+    prefix: "/remote",
+  });
+
+  app.listen({ port: 3000 });
+}
 
 const serverlessApp = serverless(app as Application);
 export const handler = serverlessApp;
