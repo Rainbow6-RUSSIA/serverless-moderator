@@ -1,21 +1,15 @@
-import serverless, { Application } from "serverless-http";
-import fastify from "fastify";
+import express from "express";
+import serverless from "serverless-http";
+import { bot, test } from "./routes/index.js";
 import { isDev } from "./util/env.js";
-import { bot, test } from "./plugins/index.js";
 
-const app = fastify({ logger: isDev });
+const app = express();
 
-await app.register(test, { prefix: "/test" });
-await app.register(bot, { prefix: "/bot" });
+app.use("/test", test());
+app.use("/bot", bot());
 
 if (isDev) {
-  await app.register(import("@fastify/http-proxy"), {
-    upstream: process.env.GW_UPSTREAM,
-    prefix: "/remote",
-  });
-
   app.listen({ port: 3000 });
 }
 
-const serverlessApp = serverless(app as Application);
-export const handler = serverlessApp;
+export const handler = serverless(app);

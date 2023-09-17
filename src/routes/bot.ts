@@ -4,4 +4,4 @@ import { ServerlessClient } from "../util/serverless-client.js";
 const client = new ServerlessClient({ discordPublicKey });
 await client.load();
 
-export default client.plugin.bind(client);
+export default client.handler.bind(client);

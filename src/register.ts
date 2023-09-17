@@ -1,13 +1,10 @@
-import { config } from "dotenv";
+import { discordToken } from "./util/env.js";
 import {
   Registry,
   CommandStore,
   InteractionHandlerStore,
 } from "@skyra/http-framework";
 import { container, Store } from "@sapphire/pieces";
-import { discordToken } from "./util/env.js";
-
-config();
 
 // MONKEY-PATCH AREA
 Store.logger = console.log;
