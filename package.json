@@ -21,8 +21,10 @@
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/fs-extra": "^11.0.2",
+    "@types/morgan": "^1.9.5",
     "@types/node": "^20.6.2",
     "fs-extra": "^11.1.1",
+    "morgan": "^1.10.0",
     "tsc-watch": "^6.0.4",
     "typescript": "^5.2.2"
   },
@@ -36,7 +38,9 @@
     "dynamoose": "^3.2.1",
     "express": "^5.0.0-beta.1",
     "node-domexception": "1.x",
-    "serverless-http": "^3.2.0"
+    "node-fetch": "^3.3.2",
+    "serverless-http": "^3.2.0",
+    "zod": "^3.22.2"
   },
   "engines": {
     "node": "16.14.1",

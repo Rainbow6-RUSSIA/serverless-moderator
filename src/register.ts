@@ -1,18 +1,13 @@
-import { discordToken } from "./util/env.js";
-import {
-  Registry,
-  CommandStore,
-  InteractionHandlerStore,
-} from "@skyra/http-framework";
-import { container, Store } from "@sapphire/pieces";
+import { env } from "./util/env.js";
+
+import { Store } from "@sapphire/pieces";
+import { Registry } from "@skyra/http-framework";
 
 // MONKEY-PATCH AREA
 Store.logger = console.log;
-container.stores.register(new CommandStore());
-container.stores.register(new InteractionHandlerStore());
 
 const registry = new Registry({
-  token: discordToken,
+  token: env.DISCORD_TOKEN,
 });
 
 await registry.load();

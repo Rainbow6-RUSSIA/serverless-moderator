@@ -2,10 +2,10 @@ import { Store } from "@sapphire/pieces";
 import { Client, ListenOptions } from "@skyra/http-framework";
 import { verifyKeyMiddleware } from "discord-interactions";
 import { Router } from "express";
-import { discordPublicKey, isDev } from "./env.js";
-import { Request, Response } from "express";
+import { env } from "./env.js";
+import { APIEmoji, APIMessage } from "discord.js";
 
-if (isDev) Store.logger = console.log;
+if (env.DEV) Store.logger = console.log;
 
 export class ServerlessClient extends Client {
   async listen(_: ListenOptions) {
@@ -14,10 +14,14 @@ export class ServerlessClient extends Client {
 
   handler() {
     const router = Router();
-    router.post("/", verifyKeyMiddleware(discordPublicKey), (req, res) => {
-      res.setHeader("Content-Type", "application/json");
-      return this.handleHttpMessage(req.body, res);
-    });
+    router.post(
+      "/",
+      verifyKeyMiddleware(env.DISCORD_PUBLIC_KEY),
+      (req, res) => {
+        res.setHeader("Content-Type", "application/json");
+        return this.handleHttpMessage(req.body, res);
+      }
+    );
     return router;
   }
 }

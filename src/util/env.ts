@@ -1,21 +1,42 @@
-import assert from "assert";
 import { config } from "dotenv";
+import z from "zod";
 import "./polyfill.js";
 
 config();
 
-export const isDev = process.env.NODE_ENV === "development";
+const isDev = process.env.NODE_ENV === "development";
 
-export const discordPublicKey = process.env.DISCORD_PUBLIC_KEY;
-export const discordToken = process.env.DISCORD_TOKEN;
+const parseEnv = (env: NodeJS.ProcessEnv) =>
+  Object.fromEntries(
+    Object.entries(env).map(([k, v]) => {
+      try {
+        return [k, JSON.parse(v ?? "undefined")];
+      } catch (err) {
+        return [k, v];
+      }
+    })
+  );
 
-export const accessKeyId = process.env.DB_ACCESS_KEY_ID;
-export const secretAccessKey = process.env.DB_SECRET_ACCESS_KEY;
-export const region = process.env.DB_REGION ?? "ru-central1";
-export const endpoint = process.env.DB_ENDPOINT;
+const loadEnvWithSchema = <T extends z.ZodTypeAny>(schema: T) => {
+  const preprocess = z.preprocess(parseEnv, schema);
+  const env = preprocess.parse(process.env);
+  schema.parse(env);
+  return env;
+};
 
-assert(discordPublicKey, "No discordPublicKey");
-// assert(accessKeyId, "No accessKeyId")
-// assert(secretAccessKey, "No secretAccessKey")
-// assert(region, "No region")
-// assert(endpoint, "No endpoint")
+const schema = z.object({
+  DEV: z.boolean().default(isDev),
+
+  DISCORD_PUBLIC_KEY: z.string(),
+  DISCORD_TOKEN: z.string(),
+
+  DB_ACCESS_KEY_ID: z.string().optional(),
+  DB_SECRET_ACCESS_KEY: z.string().optional(),
+  DB_REGION: z.string().optional().default("ru-central1-a"),
+  DB_ENDPOINT: z.string().optional(),
+
+  HIGHLIGHT_WEBHOOK: z.string().url(),
+  HIGHLIGHT_FORUM_POST: z.string().optional(),
+});
+
+export const env = loadEnvWithSchema(schema);

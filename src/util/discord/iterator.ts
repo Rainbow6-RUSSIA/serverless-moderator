@@ -22,10 +22,10 @@ export async function* iterateChannelMessages(
   const isForward = since >= 0;
   let skip = isForward ? since : -since - 1;
 
-  let cursor = DiscordSnowflake.generate({
+  let cursor: string | undefined = DiscordSnowflake.generate({
     timestamp: isForward ? 0 : 1000 * 365 * 24 * 3600 * 1000,
   }).toString();
-  let bulk: Collection<string, Message<boolean>>;
+  let bulk: Collection<string, Message<boolean>> | undefined;
 
   while (cursor && (!bulk || bulk.size === LIMIT)) {
     bulk = await channel.messages.fetch({
