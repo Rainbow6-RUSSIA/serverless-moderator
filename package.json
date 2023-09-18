@@ -21,7 +21,8 @@
     "tf:plan:prod": "cd infrastructure && terraform plan -var-file=\"../.env.production\"",
     "tf:init:prod": "cd infrastructure && terraform init && terraform workspace select prod",
     "deploy:prod": "yarn zip && yarn git:clean-tree && yarn tf:init:prod && yarn tf:apply:prod -auto-approve && yarn register:prod",
-    "register:prod": "yarn build && NODE_ENV=production node ./dist/register.js"
+    "register:prod": "yarn build && NODE_ENV=production node ./dist/register.js",
+    "postinstall": "patch-package"
   },
   "packageManager": "yarn@3.6.3",
   "devDependencies": {
@@ -38,13 +39,14 @@
     "@sapphire/snowflake": "^3.5.1",
     "@skyra/http-framework": "^1.1.1",
     "discord-interactions": "^3.4.0",
-    "discord.js": "patch:discord.js@npm%3A14.13.0#./.yarn/patches/discord.js-npm-14.13.0-cee9413e4c.patch",
+    "discord.js": "14.13.0",
     "dotenv": "^16.3.1",
     "dynamoose": "^3.2.1",
     "express": "^5.0.0-beta.1",
     "morgan": "^1.10.0",
     "node-domexception": "1.x",
     "node-fetch": "^3.3.2",
+    "patch-package": "^8.0.0",
     "serverless-http": "^3.2.0",
     "zod": "^3.22.2"
   },

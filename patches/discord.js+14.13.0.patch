@@ -1,7 +1,7 @@
-diff --git a/typings/index.d.ts b/typings/index.d.ts
-index fda9b4c0860dfa5155845c2571169439adb1b7ca..9dc8653f378c71f84f16ea5c311999b5d427ddc1 100644
---- a/typings/index.d.ts
-+++ b/typings/index.d.ts
+diff --git a/node_modules/discord.js/typings/index.d.ts b/node_modules/discord.js/typings/index.d.ts
+index fda9b4c..9dc8653 100644
+--- a/node_modules/discord.js/typings/index.d.ts
++++ b/node_modules/discord.js/typings/index.d.ts
 @@ -248,7 +248,7 @@ declare module 'node:events' {
  //#region Classes
  
