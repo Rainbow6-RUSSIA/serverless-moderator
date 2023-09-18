@@ -1,5 +1,5 @@
 resource "yandex_api_gateway" "gateway" {
-  name        = "r6mod-gateway"
+  name        = "r6mod-gateway-${terraform.workspace}"
   description = "any description"
   labels = {
     label       = "label"

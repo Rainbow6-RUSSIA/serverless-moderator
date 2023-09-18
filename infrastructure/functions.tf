@@ -6,7 +6,7 @@ resource "yandex_function" "entrypoint" {
   depends_on = [
     yandex_iam_service_account.deployer
   ]
-  name               = "r6mod-entrypoint"
+  name               = "r6mod-entrypoint-${terraform.workspace}"
   description        = "serverless bot entrypoint"
   user_hash          = substr(data.git_repository.info.commit_sha, 0, 7)
   runtime            = "nodejs16"
