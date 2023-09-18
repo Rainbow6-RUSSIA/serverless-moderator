@@ -22,7 +22,7 @@ import { isTruthy } from "../util/predicates.js";
 
 const webhook = new WebhookClient({ url: env.HIGHLIGHT_WEBHOOK });
 
-@RestrictGuildIds(["216649610511384576"])
+@RestrictGuildIds([env.DISCORD_GUILD])
 export class HighlightCommand extends Command {
   @RegisterMessageCommand((cmd) =>
     cmd

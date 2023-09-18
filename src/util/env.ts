@@ -29,6 +29,7 @@ const schema = z.object({
 
   DISCORD_PUBLIC_KEY: z.string(),
   DISCORD_TOKEN: z.string(),
+  DISCORD_GUILD: z.string(),
 
   DB_ACCESS_KEY_ID: z.string().optional(),
   DB_SECRET_ACCESS_KEY: z.string().optional(),

@@ -3,8 +3,9 @@ import {
   RegisterCommand,
   RestrictGuildIds,
 } from "@skyra/http-framework";
+import { env } from "../util/env.js";
 
-@RestrictGuildIds(["216649610511384576"])
+@RestrictGuildIds([env.DISCORD_GUILD])
 @RegisterCommand((cmd) =>
   cmd.setName("ping").setDescription("Runs a network connection test with me")
 )

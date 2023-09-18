@@ -16,9 +16,12 @@ resource "yandex_function" "entrypoint" {
   service_account_id = yandex_iam_service_account.deployer.id
 
   environment = {
-    "DISCORD_PUBLIC_KEY" = var.DISCORD_PUBLIC_KEY
-    "DISCORD_TOKEN"      = var.DISCORD_TOKEN
-    "NODE_ENV"           = "production"
+    "DISCORD_PUBLIC_KEY"   = var.DISCORD_PUBLIC_KEY
+    "DISCORD_TOKEN"        = var.DISCORD_TOKEN
+    "DISCORD_GUILD"        = var.DISCORD_GUILD
+    "HIGHLIGHT_WEBHOOK"    = var.HIGHLIGHT_WEBHOOK
+    "HIGHLIGHT_FORUM_POST" = var.HIGHLIGHT_FORUM_POST
+    "NODE_ENV"             = "production"
   }
 
   content {
