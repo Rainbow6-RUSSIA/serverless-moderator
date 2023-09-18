@@ -16,8 +16,8 @@
     "dev": "tsc-watch --onSuccess \"node ./dist/index.js\"",
     "zip": "node zip.js",
     "clear": "rm -rf dist",
-    "deploy:dev": "yarn clear && yarn build && yarn zip && yarn git:clean-tree && tf:init:dev && yarn tf:apply:dev -auto-approve",
-    "deploy:prod": "yarn clear && yarn build && yarn zip && yarn git:clean-tree && tf:init:prod && yarn tf:apply:prod -auto-approve",
+    "deploy:dev": "yarn clear && yarn build && yarn zip && yarn git:clean-tree && yarn tf:init:dev && yarn tf:apply:dev -auto-approve",
+    "deploy:prod": "yarn clear && yarn build && yarn zip && yarn git:clean-tree && yarn tf:init:prod && yarn tf:apply:prod -auto-approve",
     "deploy:force": "yarn clear && yarn build && yarn zip && yarn tf:apply:dev -auto-approve -replace=\"yandex_function.entrypoint\"",
     "register": "yarn build && node ./dist/register.js"
   },
