@@ -10,7 +10,7 @@
     "tf:apply:dev": "cd infrastructure && terraform apply -var-file=\"../.env\"",
     "tf:plan:dev": "cd infrastructure && terraform plan -var-file=\"../.env\"",
     "tf:init:dev": "cd infrastructure && terraform init && terraform workspace select dev",
-    "deploy:dev": "yarn zip && yarn git:clean-tree && yarn tf:init:dev && yarn tf:apply:dev -auto-approve",
+    "deploy:dev": "yarn zip && yarn git:clean-tree && yarn tf:init:dev && yarn tf:apply:dev -auto-approve && yarn register:dev",
     "register:dev": "yarn build && NODE_ENV=development node ./dist/register.js",
     "deploy:force": "yarn zip && yarn tf:apply:dev -auto-approve -replace=\"yandex_function.entrypoint\"",
     "git:clean-tree": "git diff --exit-code && git diff --cached --exit-code",
@@ -20,7 +20,7 @@
     "tf:apply:prod": "cd infrastructure && terraform apply -var-file=\"../.env.production\"",
     "tf:plan:prod": "cd infrastructure && terraform plan -var-file=\"../.env.production\"",
     "tf:init:prod": "cd infrastructure && terraform init && terraform workspace select prod",
-    "deploy:prod": "yarn zip && yarn git:clean-tree && yarn tf:init:prod && yarn tf:apply:prod -auto-approve",
+    "deploy:prod": "yarn zip && yarn git:clean-tree && yarn tf:init:prod && yarn tf:apply:prod -auto-approve && yarn register:prod",
     "register:prod": "yarn build && NODE_ENV=production node ./dist/register.js"
   },
   "packageManager": "yarn@3.6.3",
