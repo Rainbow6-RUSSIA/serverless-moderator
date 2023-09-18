@@ -2,14 +2,16 @@ import { config } from "dotenv";
 import z from "zod";
 import "./polyfill.js";
 
-config();
-
 const isDev = process.env.NODE_ENV === "development";
+
+config({ path: isDev ? ".env" : ".env.production" });
 
 const parseEnv = (env: NodeJS.ProcessEnv) =>
   Object.fromEntries(
     Object.entries(env).map(([k, v]) => {
       try {
+        // TODO: filter snowflakes
+        throw new Error();
         return [k, JSON.parse(v ?? "undefined")];
       } catch (err) {
         return [k, v];
@@ -20,7 +22,7 @@ const parseEnv = (env: NodeJS.ProcessEnv) =>
 const loadEnvWithSchema = <T extends z.ZodTypeAny>(schema: T) => {
   const preprocess = z.preprocess(parseEnv, schema);
   const env = preprocess.parse(process.env);
-  schema.parse(env);
+  schema.parse(process.env);
   return env;
 };
 
