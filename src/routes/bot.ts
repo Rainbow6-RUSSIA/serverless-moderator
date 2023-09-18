@@ -1,4 +1,4 @@
-import { env } from "../util/env.js";
+import { env } from "../env.js";
 import { ServerlessClient } from "../util/serverless-client.js";
 
 const client = new ServerlessClient({

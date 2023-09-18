@@ -1,7 +1,7 @@
 import express from "express";
 import serverless from "serverless-http";
 import { bot, test } from "./routes/index.js";
-import { env } from "./util/env.js";
+import { env } from "./env.js";
 import morgan from "morgan";
 
 const app = express();

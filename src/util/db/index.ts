@@ -1,5 +1,5 @@
 import { aws } from "dynamoose";
-import { env } from "../env.js";
+import { env } from "../../env.js";
 
 // export const ddb = new aws.ddb.DynamoDB({
 //     credentials: {

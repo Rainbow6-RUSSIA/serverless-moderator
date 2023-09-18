@@ -14,9 +14,9 @@ import {
   Routes,
   WebhookClient,
   messageLink,
-  MessageManager
+  MessageManager,
 } from "discord.js";
-import { env } from "../util/env.js";
+import { env } from "../env.js";
 
 const webhook = new WebhookClient({ url: env.HIGHLIGHT_WEBHOOK });
 

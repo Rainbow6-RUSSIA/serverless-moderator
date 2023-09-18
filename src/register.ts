@@ -1,4 +1,4 @@
-import { env } from "./util/env.js";
+import { env } from "./env.js";
 console.log("Registering with", env);
 
 import { Store } from "@sapphire/pieces";

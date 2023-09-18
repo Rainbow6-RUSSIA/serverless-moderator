@@ -3,7 +3,7 @@ import {
   RegisterCommand,
   RestrictGuildIds,
 } from "@skyra/http-framework";
-import { env } from "../util/env.js";
+import { env } from "../env.js";
 
 @RestrictGuildIds([env.DISCORD_GUILD])
 @RegisterCommand((cmd) =>

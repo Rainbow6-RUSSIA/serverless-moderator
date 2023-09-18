@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import z from "zod";
-import "./polyfill.js";
+import "./util/polyfill.js";
 
 const isDev = process.env.NODE_ENV === "development";
 

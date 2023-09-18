@@ -2,7 +2,7 @@ import { Store } from "@sapphire/pieces";
 import { Client, ListenOptions } from "@skyra/http-framework";
 import { verifyKeyMiddleware } from "discord-interactions";
 import { Router } from "express";
-import { env } from "./env.js";
+import { env } from "../env.js";
 import { APIEmoji, APIMessage } from "discord.js";
 
 if (env.DEV) Store.logger = console.log;
