@@ -14,7 +14,6 @@ import {
   Routes,
   WebhookClient,
   messageLink,
-  MessageManager,
 } from "discord.js";
 import { env } from "../env.js";
 
