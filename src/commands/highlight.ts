@@ -14,11 +14,11 @@ import {
   PermissionFlagsBits,
   Routes,
   WebhookClient,
+  WebhookMessageCreateOptions,
   messageLink,
 } from "discord.js";
 import fetch from "node-fetch";
 import { env } from "../env.js";
-import { isTruthy } from "../util/predicates.js";
 
 const webhook = new WebhookClient({ url: env.HIGHLIGHT_WEBHOOK });
 
@@ -31,17 +31,25 @@ export class HighlightCommand extends Command {
   )
   async messageContextMenuRun(
     interaction: Command.UserInteraction,
-    data: TransformedArguments.Message
+    { message }: TransformedArguments.Message
   ) {
-    const { reactions = [] } = data.message;
+    const { reactions = [], content, attachments } = message;
     const defer = await interaction.defer();
-    const repost = await this.repost(data.message, interaction.user);
 
-    for (const reaction of reactions) await this.react(repost, reaction.emoji);
-    await this.react(data.message, { id: null, name: "🌟" });
+    const repost = await this.send({
+      content,
+      files: attachments.map((a) => new Attachment(a)),
+    });
+    const note = await this.send({
+      embeds: [this.getNote(message, interaction.user)],
+    });
+    await Promise.allSettled([
+      ...reactions.map((r) => this.react(note, r.emoji)),
+      this.react(message, { id: null, name: "🌟" }),
+    ]);
 
     return defer.update({
-      content: `Успех!\n${messageLink(repost.channel_id, repost.id)}`,
+      content: `Успех!\n${messageLink(note.channel_id, note.id)}`,
     });
   }
 
@@ -49,19 +57,25 @@ export class HighlightCommand extends Command {
     const emojiId = emoji.id
       ? `${emoji.animated ? "a:" : ""}${emoji.name}:${emoji.id}`
       : encodeURIComponent(emoji.name!);
-    try {
-      await this.container.rest.put(
-        Routes.channelMessageOwnReaction(
-          message.channel_id,
-          message.id,
-          emojiId
-        )
-      );
-    } catch (error) {}
+
+    return this.container.rest.put(
+      Routes.channelMessageOwnReaction(message.channel_id, message.id, emojiId)
+    );
   }
 
-  async repost(message: APIMessage, reposter: APIUser) {
-    const { content, timestamp, reactions = [], attachments } = message;
+  async send(message: WebhookMessageCreateOptions) {
+    return webhook.send({
+      ...message,
+      allowedMentions: {},
+      threadId: env.HIGHLIGHT_FORUM_POST,
+    });
+  }
+
+  getNote(
+    { channel_id, author, id, timestamp, reactions = [] }: APIMessage,
+    reposter: APIUser
+  ) {
+    const note = `Автор: <@${author.id}>\n${messageLink(channel_id, id)}`;
 
     const embed = new EmbedBuilder()
       .setAuthor({
@@ -72,7 +86,7 @@ export class HighlightCommand extends Command {
           undefined,
         url: "https://discord.com/users/" + reposter.id,
       })
-      .setDescription(this.getNote(message))
+      .setDescription(note)
       .setTimestamp(new Date(timestamp));
 
     if (reactions.length)
@@ -92,54 +106,6 @@ export class HighlightCommand extends Command {
             )
             .join(", ") || "н/д",
       });
-
-    return webhook.send({
-      content,
-      embeds: [embed.toJSON()],
-      threadId: env.HIGHLIGHT_FORUM_POST,
-      allowedMentions: {},
-      files: await this.getAttachments(message),
-    });
-  }
-
-  getAttachments(message: APIMessage): Promise<Attachment[]> {
-    return Promise.allSettled([
-      ...message.attachments.map((a) => new Attachment(a)),
-      ...message.embeds
-        .filter((e) => (e.video || e.thumbnail) && e.url)
-        .map((e) => this.probeFile(e.url!)),
-    ]).then((attachments) =>
-      attachments
-        .map((a) => a.status === "fulfilled" && a.value)
-        .filter(isTruthy)
-    );
-  }
-
-  getNote(message: APIMessage) {
-    return `Автор: <@${message.author.id}>\n${messageLink(
-      message.channel_id,
-      message.id
-    )}`;
-  }
-
-  async probeFile(url: string): Promise<Attachment> {
-    const { headers } = await fetch(url, { method: "OPTIONS" });
-    const disposition = headers.get("content-disposition"),
-      length = headers.get("content-length"),
-      type = headers.get("content-type");
-    const filename =
-      (disposition &&
-        ContentDisposition.parse(disposition).parameters.filename) ??
-      new URL(url).pathname.split("/").at(-1) ??
-      "file";
-
-    return new Attachment({
-      id: "",
-      filename,
-      size: parseInt(length ?? "0"),
-      url,
-      proxy_url: "",
-      content_type: type ?? undefined,
-    });
+    return embed.toJSON();
   }
 }
