@@ -4,6 +4,7 @@ import {
   RestrictGuildIds,
   TransformedArguments,
 } from "@skyra/http-framework";
+import ContentDisposition from "content-disposition";
 import {
   APIEmoji,
   APIMessage,
@@ -15,7 +16,9 @@ import {
   WebhookClient,
   messageLink,
 } from "discord.js";
+import fetch from "node-fetch";
 import { env } from "../env.js";
+import { isTruthy } from "../util/predicates.js";
 
 const webhook = new WebhookClient({ url: env.HIGHLIGHT_WEBHOOK });
 
@@ -35,6 +38,7 @@ export class HighlightCommand extends Command {
     const repost = await this.repost(data.message, interaction.user);
 
     for (const reaction of reactions) await this.react(repost, reaction.emoji);
+    await this.react(data.message, { id: null, name: "🌟" });
 
     return defer.update({
       content: `Успех!\n${messageLink(repost.channel_id, repost.id)}`,
@@ -68,7 +72,7 @@ export class HighlightCommand extends Command {
           undefined,
         url: "https://discord.com/users/" + reposter.id,
       })
-      .setDescription(this.getContent(message))
+      .setDescription(this.getNote(message))
       .setTimestamp(new Date(timestamp));
 
     if (reactions.length)
@@ -94,14 +98,48 @@ export class HighlightCommand extends Command {
       embeds: [embed.toJSON()],
       threadId: env.HIGHLIGHT_FORUM_POST,
       allowedMentions: {},
-      files: attachments.map((a) => new Attachment(a)),
+      files: await this.getAttachments(message),
     });
   }
 
-  getContent(message: APIMessage) {
+  getAttachments(message: APIMessage): Promise<Attachment[]> {
+    return Promise.allSettled([
+      ...message.attachments.map((a) => new Attachment(a)),
+      ...message.embeds
+        .filter((e) => (e.video || e.thumbnail) && e.url)
+        .map((e) => this.probeFile(e.url!)),
+    ]).then((attachments) =>
+      attachments
+        .map((a) => a.status === "fulfilled" && a.value)
+        .filter(isTruthy)
+    );
+  }
+
+  getNote(message: APIMessage) {
     return `Автор: <@${message.author.id}>\n${messageLink(
       message.channel_id,
       message.id
     )}`;
+  }
+
+  async probeFile(url: string): Promise<Attachment> {
+    const { headers } = await fetch(url, { method: "OPTIONS" });
+    const disposition = headers.get("content-disposition"),
+      length = headers.get("content-length"),
+      type = headers.get("content-type");
+    const filename =
+      (disposition &&
+        ContentDisposition.parse(disposition).parameters.filename) ??
+      new URL(url).pathname.split("/").at(-1) ??
+      "file";
+
+    return new Attachment({
+      id: "",
+      filename,
+      size: parseInt(length ?? "0"),
+      url,
+      proxy_url: "",
+      content_type: type ?? undefined,
+    });
   }
 }

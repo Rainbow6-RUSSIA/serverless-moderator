@@ -1097,6 +1097,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/content-disposition@npm:^0.5.6":
+  version: 0.5.6
+  resolution: "@types/content-disposition@npm:0.5.6"
+  checksum: da07798d52cc8fc46a8843d768b48d54c70f1a44c861dc2c73c4c25a1e08af859709629ab0e4d23d5198107b8926bb48c593df436ba68123d87191f5e25fe4bc
+  languageName: node
+  linkType: hard
+
 "@types/express-serve-static-core@npm:^4.17.33":
   version: 4.17.36
   resolution: "@types/express-serve-static-core@npm:4.17.36"
@@ -1391,7 +1398,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"content-disposition@npm:0.5.4":
+"content-disposition@npm:0.5.4, content-disposition@npm:^0.5.4":
   version: 0.5.4
   resolution: "content-disposition@npm:0.5.4"
   dependencies:
@@ -2234,10 +2241,12 @@ __metadata:
     "@sapphire/pieces": ^3.7.0
     "@sapphire/snowflake": ^3.5.1
     "@skyra/http-framework": ^1.1.1
+    "@types/content-disposition": ^0.5.6
     "@types/express": ^4.17.17
     "@types/fs-extra": ^11.0.2
     "@types/morgan": ^1.9.5
     "@types/node": ^20.6.2
+    content-disposition: ^0.5.4
     discord-interactions: ^3.4.0
     discord.js: 14.13.0
     dotenv: ^16.3.1
