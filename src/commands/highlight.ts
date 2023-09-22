@@ -4,7 +4,6 @@ import {
   RestrictGuildIds,
   TransformedArguments,
 } from "@skyra/http-framework";
-import ContentDisposition from "content-disposition";
 import {
   APIEmoji,
   APIMessage,
@@ -17,7 +16,6 @@ import {
   WebhookMessageCreateOptions,
   messageLink,
 } from "discord.js";
-import fetch from "node-fetch";
 import { env } from "../env.js";
 
 const webhook = new WebhookClient({ url: env.HIGHLIGHT_WEBHOOK });
@@ -33,15 +31,24 @@ export class HighlightCommand extends Command {
     interaction: Command.UserInteraction,
     { message }: TransformedArguments.Message
   ) {
-    const { reactions = [], content, attachments } = message;
+    const { reactions = [], content, attachments, author } = message;
     const defer = await interaction.defer();
 
-    const repost = await this.send({
+    const identity = {
+      avatarURL:
+        (author.avatar &&
+          this.container.rest.cdn.avatar(author.id, author.avatar)) ??
+        undefined,
+      username: author.global_name ?? author.username,
+    };
+    await this.send({
       content,
       files: attachments.map((a) => new Attachment(a)),
+      ...identity,
     });
     const note = await this.send({
       embeds: [this.getNote(message, interaction.user)],
+      ...identity,
     });
     await Promise.allSettled([
       ...reactions.map((r) => this.react(note, r.emoji)),
