@@ -7,7 +7,7 @@ import {
 import { MessageFlags, PermissionFlagsBits, WebhookClient } from "discord.js";
 import { env } from "../env.js";
 
-@RestrictGuildIds([env.DISCORD_GUILD])
+@RestrictGuildIds(env.DISCORD_GUILDS)
 export class HighlightCommand extends Command {
   @RegisterMessageCommand((cmd) =>
     cmd

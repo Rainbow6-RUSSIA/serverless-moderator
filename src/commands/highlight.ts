@@ -20,7 +20,7 @@ import { env } from "../env.js";
 
 const webhook = new WebhookClient({ url: env.HIGHLIGHT_WEBHOOK });
 
-@RestrictGuildIds([env.DISCORD_GUILD])
+@RestrictGuildIds(env.DISCORD_GUILDS)
 export class HighlightCommand extends Command {
   @RegisterMessageCommand((cmd) =>
     cmd
