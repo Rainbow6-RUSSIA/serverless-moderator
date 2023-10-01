@@ -30,7 +30,10 @@ function main() {
     filter: (src) => !src.endsWith(".js.map"),
   });
   // Копируем lib
-  copySync("lib", join(tmp, "esm"), { recursive: true });
+  copySync("lib", join(tmp, "esm"), {
+    recursive: true,
+    filter: (src) => src.endsWith(".so") || src.endsWith(".js"),
+  });
 
   // Пишем commandjs манифест с зависимостями и точкой входа
   writeJSONSync(join(tmp, "package.json"), {
