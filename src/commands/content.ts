@@ -12,11 +12,11 @@ export class HighlightCommand extends Command {
   @RegisterMessageCommand((cmd) =>
     cmd
       .setName("Content")
-      .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
   )
   async messageContextMenuRun(
     interaction: Command.UserInteraction,
-    data: TransformedArguments.Message
+    data: TransformedArguments.Message,
   ) {
     const {
       attachments,
@@ -38,9 +38,9 @@ export class HighlightCommand extends Command {
         reactions,
       },
       null,
-      2
+      2,
     );
-    console.log(json, json.length);
+    if (env.DEV) console.log(json, json.length);
     return interaction.reply({
       content: `\`\`\`json\n${json}\`\`\``,
       flags: MessageFlags.Ephemeral,

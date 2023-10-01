@@ -20,12 +20,8 @@ const transformEnv = (env: NodeJS.ProcessEnv) =>
       } catch (err) {
         return [k, v];
       }
-    })
+    }),
   );
-
-const loadEnvWithSchema = <T extends z.ZodTypeAny>(schema: T) => {
-  return schema.parse(transformEnv(process.env));
-};
 
 const schema = z.object({
   DEV: z.boolean().default(isDev),
@@ -43,5 +39,5 @@ const schema = z.object({
   HIGHLIGHT_FORUM_POST: z.string().optional(),
 });
 
-export const env = loadEnvWithSchema(schema);
+export const env = schema.parse(transformEnv(process.env));
 Object.assign(process.env, env);

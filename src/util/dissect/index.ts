@@ -9,6 +9,8 @@ import {
 import { Worker } from "worker_threads";
 import { MatchResponse, ReplayResponse } from "./types";
 import { script } from "./worker.js";
+import path from "path";
+import { writeFile } from "fs/promises";
 
 let worker: Worker;
 
@@ -24,7 +26,7 @@ export async function dissect(url: string) {
     return readMatch(body.pipe(ZipParse({ forceStream: true })));
   else if (mime === "application/octet-stream" && file?.endsWith(".rec"))
     return readRound(body);
-  else return null
+  else return null;
 
   async function read(path: string) {
     return new Promise((res) => {
@@ -43,13 +45,11 @@ export async function dissect(url: string) {
     return temporaryDirectoryTask(async (tmp) => {
       const iter = zip.filter(
         (entry: ZipEntry) =>
-          entry.type === "File" && entry.path.endsWith(".rec")
+          entry.type === "File" && entry.path.endsWith(".rec"),
       ) as ZipParseStream & AsyncIterable<ZipEntry>;
 
-      for await (const entry of iter) {
-        console.log(entry.path);
-        entry.autodrain();
-      }
+      for await (const entry of iter)
+        await writeFile(path.join(tmp, path.basename(entry.path)), entry);
 
       return read(tmp) as MatchResponse;
     });
