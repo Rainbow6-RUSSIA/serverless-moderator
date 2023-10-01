@@ -18,11 +18,26 @@ export class HighlightCommand extends Command {
     interaction: Command.UserInteraction,
     data: TransformedArguments.Message
   ) {
-    const { attachments, content, embeds, mentions, reactions, author } =
-      data.message;
+    const {
+      attachments,
+      author,
+      components,
+      content,
+      embeds,
+      mentions,
+      reactions,
+    } = data.message;
     return interaction.reply({
       content: `\`\`\`json\n${JSON.stringify(
-        { attachments, content, embeds, mentions, reactions, author },
+        {
+          attachments,
+          author,
+          components,
+          content,
+          embeds,
+          mentions,
+          reactions,
+        },
         null,
         2
       )}\`\`\``,
