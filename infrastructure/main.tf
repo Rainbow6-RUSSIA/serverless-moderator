@@ -16,7 +16,10 @@ variable "DISCORD_TOKEN" {
   type      = string
   sensitive = true
 }
-variable "DISCORD_GUILDS" { type = string }
+variable "DISCORD_GUILDS" {
+  type    = string
+  default = null
+}
 
 variable "HIGHLIGHT_WEBHOOK" {
   type      = string
