@@ -1,8 +1,23 @@
 import { config } from "dotenv";
 import z from "zod";
 import "./util/polyfill.js";
+import os from "os";
+import assert from "assert";
+import path from "path";
 
 const isDev = process.env.NODE_ENV === "development";
+
+const type = os.type().split("_")[0].toLowerCase();
+const suffix = {
+  darwin: "dylib",
+  linux: "so",
+  windows: "dll",
+}[type];
+const arch = {
+  x64: "amd64",
+  arm64: "arm64",
+}[os.arch()];
+assert(arch && suffix && type);
 
 config({ path: isDev ? ".env" : ".env.production" });
 
@@ -37,6 +52,12 @@ const schema = z.object({
 
   HIGHLIGHT_WEBHOOK: z.string().url(),
   HIGHLIGHT_FORUM_POST: z.string().optional(),
+
+  DISSECT_LIB: z
+    .string()
+    .default(
+      path.join(process.cwd(), "lib", `libr6dissect-${type}-${arch}.${suffix}`),
+    ),
 });
 
 export const env = schema.parse(transformEnv(process.env));
