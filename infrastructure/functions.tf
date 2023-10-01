@@ -18,7 +18,7 @@ resource "yandex_function" "entrypoint" {
   environment = {
     "DISCORD_PUBLIC_KEY"   = var.DISCORD_PUBLIC_KEY
     "DISCORD_TOKEN"        = var.DISCORD_TOKEN
-    "DISCORD_GUILD"        = var.DISCORD_GUILD
+    "DISCORD_GUILDS"        = var.DISCORD_GUILDS
     "HIGHLIGHT_WEBHOOK"    = var.HIGHLIGHT_WEBHOOK
     "HIGHLIGHT_FORUM_POST" = var.HIGHLIGHT_FORUM_POST
     "NODE_ENV"             = "production"
