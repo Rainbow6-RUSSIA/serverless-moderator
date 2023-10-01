@@ -27,20 +27,22 @@ export class HighlightCommand extends Command {
       mentions,
       reactions,
     } = data.message;
+    const json = JSON.stringify(
+      {
+        attachments,
+        author,
+        components,
+        content,
+        embeds,
+        mentions,
+        reactions,
+      },
+      null,
+      2
+    );
+    console.log(json, json.length);
     return interaction.reply({
-      content: `\`\`\`json\n${JSON.stringify(
-        {
-          attachments,
-          author,
-          components,
-          content,
-          embeds,
-          mentions,
-          reactions,
-        },
-        null,
-        2
-      )}\`\`\``,
+      content: `\`\`\`json\n${json}\`\`\``,
       flags: MessageFlags.Ephemeral,
     });
   }
