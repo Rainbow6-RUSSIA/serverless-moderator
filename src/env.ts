@@ -6,7 +6,7 @@ const isDev = process.env.NODE_ENV === "development";
 
 config({ path: isDev ? ".env" : ".env.production" });
 
-const parseEnv = (env: NodeJS.ProcessEnv) =>
+const transformEnv = (env: NodeJS.ProcessEnv) =>
   Object.fromEntries(
     Object.entries(env).map(([k, v]) => {
       try {
@@ -16,7 +16,7 @@ const parseEnv = (env: NodeJS.ProcessEnv) =>
           (val >= Number.MAX_SAFE_INTEGER || val <= Number.MIN_SAFE_INTEGER)
         )
           throw new RangeError("Integer overflow");
-        return [k, JSON.parse(v ?? "undefined")];
+        return [k, val];
       } catch (err) {
         return [k, v];
       }
@@ -24,10 +24,7 @@ const parseEnv = (env: NodeJS.ProcessEnv) =>
   );
 
 const loadEnvWithSchema = <T extends z.ZodTypeAny>(schema: T) => {
-  const preprocess = z.preprocess(parseEnv, schema);
-  const env = preprocess.parse(process.env);
-  schema.parse(process.env);
-  return env;
+  return schema.parse(transformEnv(process.env));
 };
 
 const schema = z.object({
@@ -47,3 +44,4 @@ const schema = z.object({
 });
 
 export const env = loadEnvWithSchema(schema);
+Object.assign(process.env, env);

@@ -6,6 +6,7 @@ import {
 } from "@skyra/http-framework";
 import { MessageFlags } from "discord.js";
 import { env } from "../env.js";
+import { dissect } from "../util/dissect/index.js";
 
 @RestrictGuildIds(env.DISCORD_GUILDS)
 @RegisterCommand((cmd) =>
@@ -21,9 +22,10 @@ export class ReplayCommand extends Command {
     interaction: Command.ChatInputInteraction,
     { file }: Args
   ) {
+    await interaction.defer();
+    const dump = await dissect(file.url);
     return interaction.reply({
-      content: `\`\`\`json\n${JSON.stringify(file, null, 2)}\`\`\``,
-      flags: MessageFlags.Ephemeral,
+      content: `\`\`\`json\n${JSON.stringify(dump, null, 2)}\`\`\``,
     });
   }
 }
