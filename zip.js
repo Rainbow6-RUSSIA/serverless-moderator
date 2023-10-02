@@ -34,7 +34,7 @@ function main() {
   mkdirSync(libPath)
   copySync("lib", libPath, {
     recursive: true,
-    filter: (src) => src.endsWith(".so")
+    filter: (src) => !src.endsWith(".dll")
   });
 
   // Пишем commandjs манифест с зависимостями и точкой входа
