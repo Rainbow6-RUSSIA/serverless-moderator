@@ -11,6 +11,8 @@ app.use("/test", test());
 app.use("/bot", bot());
 
 if (env.DEV) {
+  const { default: monitor } = await import("express-status-monitor");
+  app.use(monitor());
   app.listen({ port: 3000 });
 }
 

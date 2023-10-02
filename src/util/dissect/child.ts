@@ -7,7 +7,7 @@ if (!reply) throw new ReferenceError("Not a fork process");
 const dissect = ffi.Library(env.DISSECT_LIB, {
   dissect_read: ["string", ["string"]],
 });
-console.log("Loaded dissect lib at %s", env.DISSECT_LIB, dissect);
+console.log("INFO Loaded dissect lib at %s", env.DISSECT_LIB, dissect);
 
 // TODO: idle exit
 // FIXME:

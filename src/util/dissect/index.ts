@@ -26,9 +26,7 @@ const notice =
 function init() {
   console.log("INFO No child, forking...");
   const script = fileURLToPath(new URL("./child.js", import.meta.url));
-  return fork(script, {
-    stdio: "inherit",
-  })
+  return fork(script, { stdio: "inherit" })
     .on("close", notice("DEBUG Child closed %s"))
     .on("disconnect", notice("DEBUG Child disconnected"))
     .on("error", notice("ERROR Child error %s"))
@@ -60,7 +58,7 @@ export async function dissect(url: string) {
       const timer = setTimeout(() => {
         console.log("DEBUG IPC timeout");
         res(null);
-      }, 10 * 1000);
+      }, 20 * 1000);
       child.once("message", (msg) => {
         clearTimeout(timer);
         res(msg);
