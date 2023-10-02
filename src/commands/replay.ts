@@ -6,7 +6,12 @@ import {
 } from "@skyra/http-framework";
 import { env } from "../env.js";
 import { dissect } from "../util/dissect/index.js";
-import { APIEmbedField, EmbedBuilder, MessageFlags } from "discord.js";
+import {
+  APIEmbed,
+  APIEmbedField,
+  EmbedBuilder,
+  MessageFlags,
+} from "discord.js";
 import type { Replay } from "../util/dissect/types.js";
 
 @RestrictGuildIds(env.DISCORD_GUILDS)
@@ -27,25 +32,38 @@ export class ReplayCommand extends Command {
     { file }: Args,
   ) {
     const defer = await interaction.defer({ flags: MessageFlags.Ephemeral });
-    const dump = await dissect(file.url);
-    if (env.DEV) console.log("DUMP", JSON.stringify(dump, null, 2));
-    if (!dump || !dump.data) return defer.update({ content: `Analyze Error` });
-    if (dump.error)
-      return defer.update({
-        content: `Analyze Error\n\`\`\`${dump.error}\`\`\``,
-      });
-    await defer.update({ content: "Analyze Complete!" });
 
-    if ("rounds" in dump.data) {
-      const embeds = dump.data.rounds.map((r) => this.getRoundEmded(r));
-      while (embeds.length) {
-        const message = { embeds: embeds.splice(0, 3) };
-        await defer.interaction.followup(message);
-      }
-    } else
-      await defer.interaction.followup({
-        embeds: [this.getRoundEmded(dump.data)],
+    let logs: string[] = [];
+    async function log(...args: any[]) {
+      const content = (body: string) => `Analyze log:\n\`\`\`\n${body}\`\`\``;
+      logs.push(args.filter(Boolean).join(" "));
+      await defer.update({
+        content: content(logs.join("\n")),
       });
+    }
+
+    const dump = dissect(file.url);
+    let i = 0;
+    const embeds: APIEmbed[] = [];
+
+    for await (const round of dump) {
+      i++;
+      if (!round?.data || round.error) {
+        await log(
+          `Unable to analyze round ${i}.`,
+          round?.error && `Error: ${round.error}`,
+        );
+        continue;
+      }
+      await log(`Round ${i} analyze complete!`);
+      embeds.push(this.getRoundEmded(round.data));
+    }
+
+    while (embeds.length) {
+      await defer.interaction.followup({
+        embeds: embeds.splice(0, 4),
+      });
+    }
   }
 
   getRoundEmded(round: Replay) {

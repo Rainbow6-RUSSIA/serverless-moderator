@@ -1,8 +1,13 @@
 import { ChildProcess, fork } from "child_process";
-import { writeFile } from "fs/promises";
+import { rm, writeFile } from "fs/promises";
 import fetch from "node-fetch";
 import path from "path";
-import { temporaryDirectoryTask, temporaryWriteTask } from "tempy";
+import {
+  temporaryDirectoryTask,
+  temporaryWriteTask,
+  temporaryWrite,
+  temporaryDirectory,
+} from "tempy";
 import {
   ParseStream,
   Entry as ZipEntry,
@@ -23,6 +28,12 @@ const notice =
     return data;
   };
 
+async function fromAsync<T>(gen: AsyncGenerator<T, void, unknown>) {
+  const arr: T[] = [];
+  for await (const item of gen) arr.push(item);
+  return arr;
+}
+
 function init() {
   console.log("INFO No child, forking...");
   const script = fileURLToPath(new URL("./child.js", import.meta.url));
@@ -33,7 +44,9 @@ function init() {
     .on("spawn", notice("DEBUG Child spawned"));
 }
 
-export async function dissect(url: string) {
+export async function* dissect(
+  url: string,
+): AsyncGenerator<ReplayResponse | null, null, unknown> {
   if (!child || !child.connected || child.exitCode !== null) child = init();
 
   const { headers, body } = await fetch(url);
@@ -46,12 +59,17 @@ export async function dissect(url: string) {
     file,
   );
 
-  if (!body) return;
+  if (!body) return null;
+  let iterator;
   if (mime === "application/zip")
-    return readMatch(body.pipe(ZipParse({ forceStream: true })));
+    iterator = readMatch(body.pipe(ZipParse({ forceStream: true })));
   else if (mime === "application/octet-stream" && file?.endsWith(".rec"))
-    return readRound(body);
+    iterator = readRound(body);
   else return null;
+
+  for await (const round of iterator) yield round;
+
+  return null;
 
   async function read(path: string) {
     return new Promise((res) => {
@@ -68,34 +86,32 @@ export async function dissect(url: string) {
     }).then(notice("DEBUG Got result via IPC"));
   }
 
-  async function readRound(rec: NodeJS.ReadableStream) {
+  async function* readRound(rec: NodeJS.ReadableStream) {
     console.log("INFO Starting reading round");
-    return temporaryWriteTask(
-      rec,
-      (tmp) => {
-        console.log("INFO Extracting round into %s", tmp);
-        return read(tmp) as ReplayResponse;
-      },
-      { extension: "rec" },
-    ).then(notice("INFO Cleaned up temp file"));
+    const tmp = await temporaryWrite(rec, { extension: "rec" });
+    console.log("INFO Reading round from %s", tmp);
+    yield read(tmp) as ReplayResponse;
+    await rm(tmp, { recursive: true, force: true, maxRetries: 2 });
+    console.log("INFO Cleaned up temp file");
   }
 
-  async function readMatch(zip: ParseStream): Promise<MatchResponse> {
+  async function* readMatch(zip: ParseStream) {
     console.log("INFO Starting reading match");
-    return temporaryDirectoryTask(async (tmp) => {
-      console.log("INFO Extracting match into %s", tmp);
-      const iter = zip.filter(
-        (entry: ZipEntry) =>
-          entry.type === "File" && entry.path.endsWith(".rec"),
-      ) as ZipParseStream & AsyncIterable<ZipEntry>;
+    const tmp = temporaryDirectory();
 
-      for await (const entry of iter) {
-        const filename = path.basename(entry.path);
-        await writeFile(path.join(tmp, filename), entry);
-        console.log("INFO Extracted %s round", filename);
-      }
+    console.log("INFO Extracting match into %s", tmp);
+    const iter = zip.filter(
+      (entry: ZipEntry) => entry.type === "File" && entry.path.endsWith(".rec"),
+    ) as ZipParseStream & AsyncIterable<ZipEntry>;
 
-      return read(tmp) as MatchResponse;
-    }).then(notice("INFO Cleaned up temp directory"));
+    for await (const entry of iter) {
+      const rec = path.join(tmp, path.basename(entry.path));
+      await writeFile(rec, entry);
+      console.log("INFO Extracted %s round, reading...", rec);
+      yield read(rec) as ReplayResponse;
+    }
+
+    await rm(tmp, { recursive: true, force: true, maxRetries: 2 });
+    console.log("INFO Cleaned up temp directory");
   }
 }
