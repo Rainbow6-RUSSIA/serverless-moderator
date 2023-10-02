@@ -6,7 +6,7 @@ import {
 } from "@skyra/http-framework";
 import { env } from "../env.js";
 import { dissect } from "../util/dissect/index.js";
-import { APIEmbedField, EmbedBuilder } from "discord.js";
+import { APIEmbedField, EmbedBuilder, MessageFlags } from "discord.js";
 import type { Replay } from "../util/dissect/types.js";
 
 @RestrictGuildIds(env.DISCORD_GUILDS)
@@ -26,7 +26,7 @@ export class ReplayCommand extends Command {
     interaction: Command.ChatInputInteraction,
     { file }: Args,
   ) {
-    const defer = await interaction.defer();
+    const defer = await interaction.defer({ flags: MessageFlags.Ephemeral });
     const dump = await dissect(file.url);
     if (env.DEV) console.log("DUMP", JSON.stringify(dump, null, 2));
     if (!dump || !dump.data) return defer.update({ content: `Analyze Error` });
@@ -34,15 +34,16 @@ export class ReplayCommand extends Command {
       return defer.update({
         content: `Analyze Error\n\`\`\`${dump.error}\`\`\``,
       });
-
-    await defer.delete();
+    await defer.update({ content: "Analyze Complete!" });
 
     if ("rounds" in dump.data) {
       const embeds = dump.data.rounds.map((r) => this.getRoundEmded(r));
-      while (embeds.length)
-        await interaction.followup({ embeds: embeds.splice(0, 10) });
+      while (embeds.length) {
+        const message = { embeds: embeds.splice(0, 3) };
+        await defer.interaction.followup(message);
+      }
     } else
-      return interaction.followup({
+      await defer.interaction.followup({
         embeds: [this.getRoundEmded(dump.data)],
       });
   }
@@ -89,7 +90,8 @@ export class ReplayCommand extends Command {
       { name: "Match ID", value: round.matchID },
     ];
 
-    const currentRound = round.roundNumber + round.overtimeRoundNumber + 1;
+    const currentRound =
+      round.roundNumber + Math.max(round.overtimeRoundNumber, 1);
 
     return new EmbedBuilder()
       .setTitle(
