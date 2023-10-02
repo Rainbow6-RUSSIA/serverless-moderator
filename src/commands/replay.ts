@@ -93,7 +93,7 @@ export class ReplayCommand extends Command {
         ),
       },
       ...round.teams.map((team, index) => ({
-        name: `${team.name}: ${team.role}`,
+        name: [team.role, team.name].join(" | "),
         value: round.players
           .filter((p) => p.teamIndex === index)
           .map((p) =>
@@ -108,8 +108,7 @@ export class ReplayCommand extends Command {
       { name: "Match ID", value: round.matchID },
     ];
 
-    const currentRound =
-      round.roundNumber + Math.max(round.overtimeRoundNumber, 1);
+    const currentRound = round.roundNumber + 1;
 
     return new EmbedBuilder()
       .setTitle(
