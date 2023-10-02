@@ -2,20 +2,16 @@ import { ChildProcess, fork } from "child_process";
 import { rm, writeFile } from "fs/promises";
 import fetch from "node-fetch";
 import path from "path";
-import {
-  temporaryDirectoryTask,
-  temporaryWriteTask,
-  temporaryWrite,
-  temporaryDirectory,
-} from "tempy";
+import { temporaryDirectory, temporaryWrite } from "tempy";
 import {
   ParseStream,
   Entry as ZipEntry,
   Parse as ZipParse,
   ParseStream as ZipParseStream,
 } from "unzipper";
-import { MatchResponse, ReplayResponse } from "./types";
 import { fileURLToPath } from "url";
+import { env } from "../../env.js";
+import { ReplayResponse } from "./types";
 
 let child: ChildProcess;
 
@@ -28,11 +24,10 @@ const notice =
     return data;
   };
 
-async function fromAsync<T>(gen: AsyncGenerator<T, void, unknown>) {
-  const arr: T[] = [];
-  for await (const item of gen) arr.push(item);
-  return arr;
-}
+const clean = (path: string) =>
+  rm(path, { force: true, recursive: true, maxRetries: 2 }).then(() =>
+    console.log("INFO Cleaned up %s", path),
+  );
 
 function init() {
   console.log("INFO No child, forking...");
@@ -91,8 +86,7 @@ export async function* dissect(
     const tmp = await temporaryWrite(rec, { extension: "rec" });
     console.log("INFO Reading round from %s", tmp);
     yield read(tmp) as ReplayResponse;
-    await rm(tmp, { recursive: true, force: true, maxRetries: 2 });
-    console.log("INFO Cleaned up temp file");
+    await clean(tmp);
   }
 
   async function* readMatch(zip: ParseStream) {
@@ -109,9 +103,8 @@ export async function* dissect(
       await writeFile(rec, entry);
       console.log("INFO Extracted %s round, reading...", rec);
       yield read(rec) as ReplayResponse;
+      if (!env.DEV) await clean(rec);
     }
-
-    await rm(tmp, { recursive: true, force: true, maxRetries: 2 });
-    console.log("INFO Cleaned up temp directory");
+    await clean(tmp);
   }
 }
