@@ -30,9 +30,11 @@ function main() {
     filter: (src) => !src.endsWith(".js.map"),
   });
   // Копируем lib
-  copySync("lib", join(tmp, "esm"), {
+  const libPath = join(tmp, "esm", "lib")
+  mkdirSync(libPath)
+  copySync("lib", libPath, {
     recursive: true,
-    filter: (src) => src.endsWith(".so") || src.endsWith(".js"),
+    filter: (src) => src.endsWith(".so")
   });
 
   // Пишем commandjs манифест с зависимостями и точкой входа
