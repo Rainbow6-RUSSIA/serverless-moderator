@@ -61,4 +61,3 @@ const schema = z.object({
 });
 
 export const env = schema.parse(transformEnv(process.env));
-Object.assign(process.env, env);

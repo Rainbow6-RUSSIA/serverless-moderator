@@ -1,4 +1,7 @@
+import { ChildProcess, fork } from "child_process";
+import { writeFile } from "fs/promises";
 import fetch from "node-fetch";
+import path from "path";
 import { temporaryDirectoryTask, temporaryWriteTask } from "tempy";
 import {
   ParseStream,
@@ -6,16 +9,13 @@ import {
   Parse as ZipParse,
   ParseStream as ZipParseStream,
 } from "unzipper";
-import { Worker } from "worker_threads";
 import { MatchResponse, ReplayResponse } from "./types";
-import { script } from "./worker.js";
-import path from "path";
-import { writeFile } from "fs/promises";
+import { script } from "./child.js";
 
-let worker: Worker;
+let child: ChildProcess;
 
 export async function dissect(url: string) {
-  worker ??= new Worker(script);
+  child ??= fork(script);
 
   const { headers, body } = await fetch(url);
   const mime = headers.get("content-type");
@@ -30,8 +30,8 @@ export async function dissect(url: string) {
 
   async function read(path: string) {
     return new Promise((res) => {
-      worker.once("message", res);
-      worker.postMessage(path);
+      child.once("message", res);
+      child.send(path);
     });
   }
 
