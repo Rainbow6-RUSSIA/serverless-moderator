@@ -2,6 +2,7 @@ openapi: '3.0.2'
 info:
   version: '1.0.0'
   title: Mod.R6RU
+
 paths:
 # Gateway ping
   /echo:
@@ -32,32 +33,25 @@ paths:
 # Function ping
   /test:
     get:
-      responses:
-        '200':
-          description: Ok
+      responses: { '200' }
       x-yc-apigateway-integration:
-        type: cloud_functions
-        function_id: ${function_id}
-        tag: $latest
-        service_account_id: ${service_account_id}
+        $ref: '#/components/x-yc-apigateway-integrations/BaseFunction'
+
     post:
-      responses:
-        '200':
-          description: Ok
+      responses: { '200' }
       x-yc-apigateway-integration:
-        type: cloud_functions
-        function_id: ${function_id}
-        tag: $latest
-        service_account_id: ${service_account_id}
+        $ref: '#/components/x-yc-apigateway-integrations/BaseFunction'
+
 # Discord outgoing webhook
   /bot:
     post:
-      responses:
-        '200':
-          description: Ok
+      responses: { '200' }
       x-yc-apigateway-integration:
-        type: cloud_functions
-        function_id: ${function_id}
-        tag: $latest
-        service_account_id: ${service_account_id}
-         
+        $ref: '#/components/x-yc-apigateway-integrations/BaseFunction'
+
+components:
+  x-yc-apigateway-integrations:
+    BaseFunction:
+      type: cloud_functions
+      function_id: ${function_id}
+      service_account_id: ${service_account_id}

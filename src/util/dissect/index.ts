@@ -44,7 +44,7 @@ async function* readRound(rec: NodeJS.ReadableStream) {
   console.log("INFO Starting reading round");
   const tmp = await temporaryWrite(rec, { extension: "rec" });
   console.log("INFO Reading round from %s", tmp);
-  yield read(tmp) as ReplayResponse;
+  yield read(tmp) as ReplayResponse | null;
   await clean(tmp);
 }
 
@@ -61,15 +61,13 @@ async function* readMatch(zip: ParseStream) {
     const rec = path.join(tmp, path.basename(entry.path));
     await writeFile(rec, entry);
     console.log("INFO Extracted %s round, reading...", rec);
-    yield read(rec) as ReplayResponse;
+    yield read(rec) as ReplayResponse | null;
     if (!env.DEV) await clean(rec);
   }
   await clean(tmp);
 }
 
-export async function* dissect(
-  url: string,
-): AsyncGenerator<ReplayResponse | null, null, unknown> {
+export async function* dissect(url: string) {
   const { headers, body } = await fetch(url);
   const mime = headers.get("content-type");
   const file = headers.get("content-disposition");
@@ -81,14 +79,11 @@ export async function* dissect(
   );
 
   if (!body) return null;
-  let iterator;
-  if (mime === "application/zip")
-    iterator = readMatch(body.pipe(ZipParse({ forceStream: true })));
-  else if (mime === "application/octet-stream" && file?.endsWith(".rec"))
-    iterator = readRound(body);
-  else return null;
 
-  for await (const round of iterator) yield round;
+  if (mime === "application/zip")
+    yield* readMatch(body.pipe(ZipParse({ forceStream: true })));
+  else if (mime === "application/octet-stream" && file?.endsWith(".rec"))
+    yield* readRound(body);
 
   return null;
 }
