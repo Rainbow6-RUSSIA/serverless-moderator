@@ -33,19 +33,21 @@ paths:
 # Function ping
   /test:
     get:
-      responses: { '200' }
+      
+      responses: { '200': { description: OK } }
       x-yc-apigateway-integration:
         $ref: '#/components/x-yc-apigateway-integrations/BaseFunction'
 
     post:
-      responses: { '200' }
+      
+      responses: { '200': { description: OK } }
       x-yc-apigateway-integration:
         $ref: '#/components/x-yc-apigateway-integrations/BaseFunction'
 
 # Discord outgoing webhook
   /bot:
     post:
-      responses: { '200' }
+      responses: { '200': { description: OK } }
       x-yc-apigateway-integration:
         $ref: '#/components/x-yc-apigateway-integrations/BaseFunction'
 

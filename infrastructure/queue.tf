@@ -3,23 +3,22 @@ resource "yandex_message_queue" "queue" {
 
   message_retention_seconds  = 600
   visibility_timeout_seconds = 5
-  access_key                 = yandex_iam_service_account_static_access_key.deployer.access_key
-  secret_key                 = yandex_iam_service_account_static_access_key.deployer.secret_key
 
-  depends_on = [
-    yandex_iam_service_account.deployer
-  ]
+  access_key = yandex_iam_service_account_static_access_key.deployer.access_key
+  secret_key = yandex_iam_service_account_static_access_key.deployer.secret_key
+  depends_on = [yandex_resourcemanager_folder_iam_member.deployer]
 }
 
 resource "yandex_function_trigger" "trigger" {
   name = "r6mod-trigger-${terraform.workspace}"
   message_queue {
-    queue_id           = yandex_message_queue.queue.id
+    queue_id           = yandex_message_queue.queue.arn
     service_account_id = yandex_iam_service_account.deployer.id
     batch_size         = 1
     batch_cutoff       = 0
   }
   function {
-    id = yandex_function.entrypoint.id
+    id                 = yandex_function.entrypoint.id
+    service_account_id = yandex_iam_service_account.deployer.id
   }
 }

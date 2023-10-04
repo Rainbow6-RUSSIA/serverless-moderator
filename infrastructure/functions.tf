@@ -30,9 +30,3 @@ resource "yandex_function" "entrypoint" {
     zip_filename = "../dist/bundle.zip"
   }
 }
-
-resource "yandex_function_iam_binding" "entrypoint-admin" {
-  function_id = yandex_function.entrypoint.id
-  members     = ["serviceAccount:${yandex_iam_service_account.deployer.id}"]
-  role        = "serverless.functions.admin"
-}
