@@ -25,7 +25,7 @@ const transformEnv = (env: NodeJS.ProcessEnv) =>
   Object.fromEntries(
     Object.entries(env).map(([k, v]) => {
       try {
-        const val = JSON.parse(v ?? "undefined");
+        const val = JSON.parse(v?.replace(/\\"/g, '"') ?? "undefined");
         if (
           typeof val === "number" &&
           (val >= Number.MAX_SAFE_INTEGER || val <= Number.MIN_SAFE_INTEGER)
