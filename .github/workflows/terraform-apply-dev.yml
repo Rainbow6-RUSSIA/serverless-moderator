@@ -1,0 +1,36 @@
+name: "Terraform Dev"
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  INFISICAL_API_URL: ${{ secrets.INFISICAL_API_URL }}
+  INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN }}
+  PG_CONN_STR: ${{ secrets.TERRAFORM_BACKEND }}
+
+jobs:
+  terraform:
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - shell: bash
+        run: curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | sudo -E bash
+      - shell: bash
+        run: sudo apt-get update && sudo apt-get install -y infisical
+      - uses: zerotier/github-action@v1
+        with:
+          network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
+          auth_token: ${{ secrets.ZEROTIER_CENTRAL_TOKEN }}
+      - uses: hashicorp/setup-terraform@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16.14.1"
+
+      - run: yarn install --immutable
+      - run: infisical run --env=dev -- yarn env .env
+      - run: infisical run --env=dev -- yarn deploy:dev

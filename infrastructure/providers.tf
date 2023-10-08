@@ -10,6 +10,10 @@ terraform {
     }
   }
   required_version = ">= 0.13"
+
+  backend "pg" {
+    schema_name = "r6mod"
+  }
 }
 
 provider "yandex" {

@@ -45,10 +45,15 @@ const schema = z.object({
   DISCORD_TOKEN: z.string(),
   DISCORD_GUILDS: z.array(z.string()).default([]),
 
-  DB_ACCESS_KEY_ID: z.string().optional(),
-  DB_SECRET_ACCESS_KEY: z.string().optional(),
-  DB_REGION: z.string().optional().default("ru-central1-a"),
-  DB_ENDPOINT: z.string().optional(),
+  DDB_ACCESS_KEY_ID: z.string().default(""),
+  DDB_SECRET_ACCESS_KEY: z.string().default(""),
+  DDB_REGION: z.string().default("ru-central1-a"),
+  DDB_ENDPOINT: z.string().default(""),
+
+  SQS_ACCESS_KEY_ID: z.string().default(""),
+  SQS_SECRET_ACCESS_KEY: z.string().default(""),
+  SQS_REGION: z.string().default("ru-central1-a"),
+  SQS_ENDPOINT: z.string().default(""),
 
   HIGHLIGHT_WEBHOOK: z.string().url(),
   HIGHLIGHT_FORUM_POST: z.string().optional(),
