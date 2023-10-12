@@ -13,7 +13,7 @@ resource "yandex_function" "entrypoint" {
   entrypoint  = "index.handler"
 
   memory            = "512"
-  execution_timeout = "60"
+  execution_timeout = "30"
 
   service_account_id = yandex_iam_service_account.deployer.id
 
