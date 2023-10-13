@@ -1,5 +1,4 @@
 import { env } from "./env.js";
-console.log("Registering with", env);
 
 import { Store } from "@sapphire/pieces";
 import { Registry } from "@skyra/http-framework";

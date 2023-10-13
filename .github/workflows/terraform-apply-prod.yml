@@ -30,6 +30,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "16.14.1"
+          cache: "yarn"
 
       - run: yarn install --immutable
       - run: infisical run --env=prod -- yarn env .env.production
