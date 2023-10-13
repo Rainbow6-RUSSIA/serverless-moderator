@@ -1,4 +1,4 @@
-import ffi from "ffi-napi";
+import koffi from "koffi";
 import { rm, writeFile } from "fs/promises";
 import fetch from "node-fetch";
 import path from "path";
@@ -12,18 +12,9 @@ import {
 import { env } from "../../env.js";
 import { ReplayResponse } from "./types";
 
-const lib = ffi.Library(env.DISSECT_LIB, {
-  dissect_read: ["string", ["string"]],
-});
-
-const notice =
-  (...args: any[]) =>
-  <T>(data: T) => {
-    if (args.some((a) => typeof a === "string" && a.includes("%s")))
-      console.log(...args, data);
-    else console.log(...args);
-    return data;
-  };
+const dissect_read = koffi
+  .load(env.DISSECT_LIB)
+  .cdecl("dissect_read", "str", ["str"]);
 
 const clean = (path: string) =>
   rm(path, { force: true, recursive: true, maxRetries: 2 }).then(() =>
@@ -32,7 +23,7 @@ const clean = (path: string) =>
 
 async function read(path: string) {
   try {
-    const res = lib.dissect_read(path);
+    const res = dissect_read(path);
     if (!res) throw new Error();
     return JSON.parse(res);
   } catch (error) {
